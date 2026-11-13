@@ -3,7 +3,7 @@
 # Only `sha` is still open: put the 40-character commit id of the commit you want listed (see CATALOG.md), then check it with the
 # repository's own validator:   python3 scripts/validate_plugin_catalog.py plugin-catalog/memorybank.yaml
 name: memorybank
-repo: https://github.com/nicholaslaldigital/hermes-mnemosyne
+repo: https://github.com/nicholaslaldigital/hermes-memory-bank
 sha: "<40-character commit id from `git rev-parse HEAD`>"
 subdir: memorybank
 version: "1.3.0"
@@ -12,7 +12,7 @@ maintainer: nicholaslaldigital
 tier: community
 category: memory
 requires_hermes: ">=0.21.5"
-docs_url: https://github.com/nicholaslaldigital/hermes-mnemosyne#readme
+docs_url: https://github.com/nicholaslaldigital/hermes-memory-bank#readme
 known_issues:
 - Developed and tested on Windows only; macOS and Linux are expected to work but have not been run.
 - The macOS/Linux-only code (owner-only file modes, macOS durability settings, no browser auto-open on Linux) is untested on a real Mac or Linux machine.
