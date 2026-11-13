@@ -1,0 +1,20 @@
+# Never commit what a run of the tools leaves behind: banks (they hold text from memory files and
+# conversations), bytecode, preview folders (they hold their own bank and exports), a default-named export,
+# build output, and what file managers add. An export you name yourself is NOT ignored: tests/test_portability.py
+# fails on any file that looks like one - run it before you commit.
+.claude/
+preview-home/
+memorybank-preview-*/
+memorybank-export-*.json
+/dist/
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.db-wal
+*.db-shm
+*.zip
+.DS_Store
+._*
+Thumbs.db
+desktop.ini

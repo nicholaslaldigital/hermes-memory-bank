@@ -1,0 +1,120 @@
+# Changelog
+
+## 1.3.0 - fixes and hardening on 1.2.0
+
+Upgrade: quit Hermes, then run `python3 install.py --profile NAME` again (`python` or `py -3` on Windows, `--root` for
+the main profile). It is idempotent: it changes no setting that is already right, keeps a backup of the old plugin,
+and re-checks the bank. A profile where `memorybank` sits in both `plugins.enabled` and `plugins.disabled` (what the
+1.2.0 Hermes-Python route could leave) is put right by `plugins enable`. A usage marker made by 1.2.0 is upgraded by
+its first 1.3.0 report only if the earlier chats still add up to what it recorded (within 2%); otherwise it keeps its
+own summary and the report says the usual range cannot be rebuilt. An existing bank keeps the permissions it has (see
+"macOS and Linux" below).
+
+**Memory that never fills up** now says what it covers: a new entry (an `add`) that does not fit goes to the bank; a
+`replace` that makes an entry longer than the room left is still refused by Hermes, and the README says what to do
+then.
+
+**Recall and safety**
+- A conversation is no longer offered its own earlier turns as a "past session": after Hermes compacts it, and also
+  after a restart, a resume or a rebuilt agent, and for the chat a `/branch` started from. The conversations before a
+  gateway `/new` are other conversations and are still recalled.
+- Stored text can no longer rebuild Hermes' `<memory-context>` fence tag (it was removed in one pass only); every
+  recall line and always-on note is cleaned of such tags until none is left.
+- The write-approval check fails closed: a save is refused when approval is on (or cannot be told to be off) and the
+  check fails while it runs; a Hermes with no write-approval module saves as its own memory tool does.
+- A scanner that cannot be loaded, or that fails, is reported once per process in Hermes' log (once on stderr in the
+  standalone command line) instead of silently: until it works again, text is not screened by it.
+- A bank that cannot be opened or written is no longer reported as "busy": Hermes' own refusal stands, and the tool
+  and note stay off for that session. Any other failure while the provider starts leaves it off in the same way, and
+  the command-line chat is told once. A bank another program holds for a moment (a backup copy, a virus scan, a lock
+  while the bank is being created) is tried again a few times, pausing half a second between tries, before the
+  provider gives up for the session. Starting a cron or webhook run no longer writes to the bank or waits for another process's write lock.
+- After `/undo` (also `/undo N` and several in a row) the memories whose recall block left the transcript can be
+  recalled again, and none whose block is still in it is repeated. This reads Hermes' session database; where it
+  cannot be read, only the last undone turn's block is released until the next turn. A hidden conversation that was
+  captured live is retired too.
+- Hostile or huge messages no longer crash or stall indexing (nested JSON, e-mail-shaped text, key/value lines), and
+  an import with many new names no longer slows down as it goes.
+- Photo and other structured messages, as Hermes stores them, are indexed and checked. Rows nobody typed (hidden
+  scaffolding, sub-agent results, notices) are no longer prompts, titles or entities. A conversation you unhide or pin
+  comes back at the next import. `hermes memorybank check` follows `capture.history_limit` and its remedy is `import
+  --force`; a conversation that cannot be indexed is counted as failed, logged, retried by every import and shown by
+  `check` as unreadable; `state.db` text that is not valid UTF-8 no longer stops the import or the check.
+- `purge` overwrites what it deletes (secure delete, merged search index, emptied log) and removes names and topics
+  that nothing links to any more, and the per-conversation copies of the always-on notes that hold a purged item. It
+  runs in batches of 250 (other programs can write meanwhile; the recall log is now indexed by item), rewrites the
+  bank file (VACUUM) at every purge, and says plainly when the search index or the log file could not be cleaned
+  (another program has the bank open): `purge --yes` then finishes it. Its wording is "from the bank" because Hermes
+  keeps its own copies in `state.db`. `export` and `purge --retired` work on banks with tens of thousands of items;
+  `export` with no bank says so and creates nothing.
+- A setting of the wrong kind in `memorybank.json` is ignored with a one-time warning instead of breaking recall or
+  capture; numbers are capped.
+- Terminal escape codes in stored text are stripped from command-line output; the viewer page escapes the folder name.
+- `run.py` started from `<profile>/plugins/memorybank` acts on the profile it is installed in (a line on stderr says
+  which), not on `HERMES_HOME`; its stdout holds only the command's own output.
+- macOS and Linux: a bank folder and database that 1.3.0 creates are private to the user (0700 / 0600); one that
+  already exists keeps its modes (`chmod 700 <profile>/plugin-data/memorybank` and `chmod 600
+  <profile>/plugin-data/memorybank/bank.db*` tighten it). An export file is always narrowed to 0600. The viewer is not
+  auto-opened on Linux (the access key would sit on a browser's command line). The bank uses WAL only where that is
+  safe, and macOS gets `synchronous=FULL`. None of this has been run on a real Mac or Linux machine.
+- `hermes memorybank check` reports skills whose stored text is missing (it does not look at the searchable text of
+  sessions). A bank that 1.2.0 already migrated is not re-read by upgrading; `hermes memorybank import --force
+  --limit 0` re-reads every skill and conversation and fills it in. Only a bank still at schema version 1 is re-read
+  automatically.
+
+**Usage meter**
+- Every report says it covers main-loop chat calls only (compression, vision, title and background-review calls are
+  not included).
+- Before/after verdicts compare only models used on both sides, in the same mix. From at least 3 earlier weeks the
+  report works out the range that 19 of 20 ordinary weeks would stay inside and says how many weeks that rests on: a
+  figure inside it is "no clear effect yet"; outside it the report says it points to a lower or higher cost - a
+  lead, not a proof - and only with about 500 priced calls in at least 5 priced chats (a chat Hermes compressed counts
+  once). Otherwise it says "no verdict" and why. It never says "real". Chats that used more than one model or
+  provider are counted in the totals but left out of the same-model figures, and the report says how many. Chats
+  Hermes recorded no price for (included in a plan, unpriced) are left out of cost figures and counted.
+- For a cache-lifetime marker (`1h` or `auto`) only the chats the setting reaches count (under `auto`, only chats a
+  person paces). The report shows cache-write tokens per call and says that Hermes' list-price estimates book every
+  cache write at the 5-minute price, so a lower cost per call is an upper bound on the saving. The cache-lifetime
+  "idea" counts only human-paced Claude chats; tool habits are shown in every view.
+- `--mark` refuses an unreadable `state.db` and a folder that does not exist; if `state.db` cannot be opened read-only
+  and a non-empty `-wal` or `-journal` beside it may hold more chats, the report stops and says so (and `--mark`
+  refuses). The marker file is validated, locked while written and never overwritten when damaged; entries and keys
+  it does not understand are kept when `--mark` adds one; a stale lock is taken over by one run only; a damaged entry,
+  or a failure while working out the report, ends in a note ("1 entry ... could not be used"), never a traceback.
+  Weeks are counted from Mondays, option ranges are checked, and a locked `state.db` is reported.
+
+**Installer**
+- The Hermes-config-writer route reads `config.yaml` back; the `hermes` route refuses a Hermes older than the plugin's
+  floor (and says when it cannot read the version); `--profile default` means the main profile; a `hermes` command
+  that works on another home is not gone round unasked; running as root on someone else's profile is refused;
+  profile names are checked against Hermes' rule; relative paths are made absolute; the reason a `hermes` call failed
+  is shown.
+- Every `hermes` call the installer makes, and every one it prints, names the profile (`--profile NAME`, `--profile
+  default` for the main one), so a profile chosen earlier with `hermes profile use` cannot redirect an install or a
+  rollback. PowerShell gets single quotes and Command Prompt double quotes (with a warning about `%`).
+- One install or uninstall at a time per profile (a lock file); the plugin copy is staged and checked before it
+  replaces the old one; `--purge` probes the bank and `memorybank.json` first, stops before changing anything if they
+  are open, and exits 3 rather than "Done." if it could not move them afterwards (run it again with `--purge`); the
+  uninstall reads the provider back and stops (exit 3) if the setting did not go back; an uninstall without a usable
+  `hermes` carries on when `config.yaml` no longer names the plugin; a failed re-install no longer loses the record of
+  the provider you had before.
+- `ROLLBACK.md` says where things land, to look at the bank BEFORE rolling back (`hermes memorybank` no longer exists
+  afterwards) and how to read it afterwards with the removed plugin's `run.py`, and how to go back to an earlier
+  build. An uninstall that cannot move the plugin back keeps it in the backup instead of deleting it, and one that
+  stops half-way says to run it again. On Windows a folder a virus scanner holds for a moment is waited for.
+- `--dry-run` says that it changes no setting, plugin file or backup, and that it starts `hermes` (which may write
+  its own logs). A console that cannot show a path's characters no longer crashes the installer.
+
+**Docs and hygiene**
+- The README and catalog text say what is stored (excerpts of what you type), which threads run, which refusal
+  messages the hook rewrites, what `memorybank.json` is written by, which code depends on the operating system and has
+  never run on a Mac or Linux machine, what `recall.cron` does, how many conversations are indexed, and what the tests
+  do not cover. Commands in the README no longer carry trailing `#` comments (zsh passes them to the program) and name
+  the Windows form of `python3`.
+- Test fixtures contain only made-up people, offices and hostnames (public product, vendor and city names are used as
+  ordinary words); `.gitignore` keeps banks, previews and builds out of a repository; `tests/seed_preview.py` can no
+  longer delete a real bank.
+
+## 1.2.0
+
+Usage meter (`hermes memorybank usage`), cache-lifetime trial support, a cross-platform installer, the shareable package.
