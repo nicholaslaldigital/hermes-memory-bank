@@ -12,4 +12,4 @@ from .recall import (  # noqa: F401
 )
 from .store import RECALLABLE, Store, fts5_available  # noqa: F401
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"

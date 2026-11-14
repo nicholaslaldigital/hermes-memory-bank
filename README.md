@@ -10,8 +10,8 @@ change helped.
 - Your skills (the first 12,000 characters of each) and your conversations (the newest 5,000; not scheduled or
   delegated runs, hidden chats or one-message chats) are **indexed**; relevant items are **recalled automatically**
   before each turn.
-- A live **network view** (the "bunch of connected balls") inside the Hermes desktop app, the dashboard, or a
-  local page.
+- A live **network view** in 3D, drawn as a small solar system (every item a planet, topics the suns), inside the
+  Hermes desktop app, the dashboard, or a local page.
 - `hermes memorybank usage`: tokens, cache behaviour and estimated cost **by week**, and before/after a change. It
   covers the main-loop calls of each chat only (not compression, vision, title or background-review calls).
 - Local only: one SQLite file per profile, no network, no model calls. Reversible: every install writes a backup
@@ -23,6 +23,10 @@ Details, commands, settings, safety notes and limits: [memorybank/README.md](mem
 
 You need Hermes 0.21.5 or newer with the `hermes` command working (`hermes --version`), and Python 3.8 or newer.
 Quit Hermes first (the desktop app and any gateway), then work in a terminal from this folder.
+
+To get this folder, clone the repository (`git clone https://github.com/nicholaslaldigital/hermes-memory-bank`) or
+use GitHub's Code > Download ZIP and unpack it. If an AI assistant does the install for you, point it at
+[INSTALL-WITH-CLAUDE.md](INSTALL-WITH-CLAUDE.md).
 
 **On Windows** type `python` (or `py -3`) where this page says `python3`. If Windows answers "Python was not found"
 or opens the Microsoft Store, that is only a placeholder shortcut, not Python: install Python 3.8 or newer
@@ -101,11 +105,13 @@ that finish the job by hand. The plan it prints first (also with `--dry-run`) sa
 
 ```
 install.py          the installer (and uninstaller)
+INSTALL-WITH-CLAUDE.md  a short brief for an AI assistant asked to do the install
 memorybank/         the plugin - this is what gets installed into a profile
 tests/              run_tests.py and the test files (see below)
 catalog/            a draft entry and pull-request text for the Hermes plugin catalog
 CATALOG.md          how to submit it to the Hermes plugin catalog
 CHANGELOG.md        what changed in each version
+LICENSE             the MIT License
 ```
 
 If you were given a `dist/` folder next to these, its zips were built by the author's packaging step, which is not

@@ -24,14 +24,15 @@ a pull request under your name.
 
 ## Decide first
 
-1. **Where to host it:** a public GitHub repository you own (the catalog clones it at the pinned commit).
+1. **Where it is hosted:** the public repository https://github.com/nicholaslaldigital/hermes-memory-bank (the
+   catalog clones it at the pinned commit).
 2. **A license** (this repository uses the MIT License, see `LICENSE`).
 3. **The name shown as maintainer** and the `author` line in `memorybank/plugin.yaml` (now "Hermes Memory Bank").
 4. **Your commit e-mail.** Commits are public. Use GitHub's no-reply address
    (`git config user.email "<id>+<username>@users.noreply.github.com"`) if you do not want a real one shown.
 5. If the code was written for an employer or on their equipment, check you are free to publish it.
 
-## Before the first push (a public repository's history cannot be taken back)
+## Before every push (a public repository's history cannot be taken back)
 
 - Run `python3 tests/test_portability.py` on the folder you are about to commit (on Windows `python`, see the
   README). It fails on a database, bytecode (outside `__pycache__`), key file, absolute user folder, e-mail address
@@ -54,8 +55,8 @@ a pull request under your name.
 
 ## Steps
 
-1. Create the public repository from this folder's contents, keeping the plugin in the `memorybank/` folder (the
-   catalog entry points there with `subdir: memorybank`). Commit and push.
+1. Commit and push the release you want listed to the public repository, keeping the plugin in the `memorybank/`
+   folder (the catalog entry points there with `subdir: memorybank`).
 2. Run the same checks the catalog runs, on a checkout of the commit you will pin:
 
    ```
@@ -66,8 +67,8 @@ a pull request under your name.
    Both should pass (the test run reports anything it had to skip, and a skipped test was not run).
 3. Get the commit id: `git rev-parse HEAD` (40 hex characters). Pin that exact commit; later commits do not count
    until you re-pin.
-4. Copy `catalog/memorybank.yaml`, fill in `repo`, `sha`, `maintainer` and `docs_url`, and keep `version` equal to
-   the one in `memorybank/plugin.yaml`.
+4. Copy `catalog/memorybank.yaml` and fill in `sha` (`repo`, `maintainer` and `docs_url` already name this
+   repository), keeping `version` equal to the one in `memorybank/plugin.yaml`.
 5. Fork `NousResearch/hermes-agent`, add that one file as `plugin-catalog/memorybank.yaml` (the PR must touch
    nothing else), and open a pull request using `catalog/PR_DESCRIPTION.md` as the description. Add a screenshot of
    the network view.

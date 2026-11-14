@@ -1,7 +1,7 @@
 ## Add `memorybank` to the plugin catalog
 
 Adds `plugin-catalog/memorybank.yaml` (category `memory`, tier `community`), pinned to `<sha>` of
-`<repo>` (`subdir: memorybank`, version 1.3.0). I am the repository's owner.
+`<repo>` (`subdir: memorybank`, version 1.4.0). I am the repository's owner.
 
 ### What it is
 
@@ -62,6 +62,13 @@ relative imports of files loaded by path); no other module entry is touched.
   or created by the user), an export file only when the user runs `export`. On macOS/Linux a bank folder and database
   that this version creates are private to the user (0700 / 0600) and an export file is always set to 0600; a bank
   that already exists keeps its modes. It never writes `MEMORY.md`, `USER.md`, skills, `state.db` or `config.yaml`.
+- **In the page (Desktop app, dashboard tab, local page):** The network view keeps one value in the `localStorage` of the page it runs in (the Desktop app, the dashboard
+  tab or the local page): the key `memorybank-view`, holding `2d` or `3d` (the 2D/3D choice); nothing else is
+  stored in the browser and the Python side never reads it.
+  While its page is open and visible the view animates on UI timers (about 30 frames a second; it stands still
+  under the system's reduced-motion setting and in a hidden window), and every timer is cleared when the page is
+  left. To match the host theme it reads - never writes - the computed background colour of its own ancestors; it
+  queries no app element by selector and observes nothing.
 - **What it stores from conversations:** for each conversation, the first six user messages (up to 280 characters each,
   verbatim), a searchable copy of up to 60 later messages (240 characters each, about 9,000 in all) and a 300-character
   excerpt of the last reply, plus the first 12,000 characters of each skill and, for the newest 200 conversations, a

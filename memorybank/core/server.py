@@ -74,7 +74,7 @@ def _int(query: Dict[str, str], name: str, default: int) -> int:
 
 def _handler(store: Store, cfg: Dict[str, Any], token: str, title: str):
     class Handler(BaseHTTPRequestHandler):
-        server_version = "MemoryBank/1.3"
+        server_version = "MemoryBank/1.4"
         protocol_version = "HTTP/1.1"
         timeout = 10  # a client that stops sending frees its thread
 

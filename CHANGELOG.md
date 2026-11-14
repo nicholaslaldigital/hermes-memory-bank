@@ -1,5 +1,67 @@
 # Changelog
 
+## 1.4.0 - the network view in 3D, drawn as a small solar system
+
+Upgrade: as for 1.3.0 below (quit Hermes, run the installer again, reopen Hermes). Only the network view changed;
+the bank, its data format, the commands and the settings are the same as in 1.3.0.
+
+**The network view is now 3D.** The graph is laid out in three dimensions and drawn in perspective
+(near items bigger, far ones smaller and fainter). It is still the one dependency-free `ui/engine.js`
+drawing on an ordinary 2D canvas - no WebGL, no library, nothing new loaded at run time - so the desktop page, the
+dashboard tab and the standalone page all get it.
+- Drag empty space to turn the view, Shift+drag (or the right or middle button) to slide it, scroll or pinch to
+  zoom towards the pointer, drag an item to move it. Arrow keys turn, `+`/`-` zoom; `/`, `F` and Esc as before. On
+  touch, one finger turns and two fingers zoom and slide.
+- A "3D"/"2D" button next to the kind chips switches to a flat view (the earlier layout, pan and zoom, drawn with
+  the same pictures) and back. The choice is remembered in the browser under `memorybank-view` where storage is
+  available.
+- When nothing is touched for a few seconds the 3D view turns slowly. Any input stops it; it is off in the flat
+  view, in a hidden tab and when the system asks for reduced motion (`prefers-reduced-motion`).
+- Everything else is as it was: data format, API calls, search, kind chips, timeline and replay, detail panel,
+  Forget/Undo.
+- Fixed along the way (the flat view had it too): a view that loaded while it had no size - a hidden pane, a
+  minimised window - fitted the picture to nothing and showed a speck until Fit was pressed. It now fits itself
+  as soon as it gets a size.
+
+**And it looks like a small solar system.** Same data, same controls, a new picture (still nothing but a 2D canvas):
+- Every item is a planet: a matte world with a surface of its own, lit from the upper left, its far side in
+  shadow - no shine, no glow. Each kind is a sort of world in the kind's colour, muted like a photograph:
+  memories are banded giants in amber and ochre, entities blue worlds of sea and land, skills pale violet ice
+  giants, sessions grey cratered moons. A kind has five different worlds and an item always gets the same one.
+  More links or more importance make a planet bigger, not brighter. Far planets are dimmer and a little bluer
+  instead of see-through. Zoomed in, the surface shows: belts and storms, coasts and ice caps, craters.
+- Topics are the suns, and the suns are golden: soft discs, warm white in the middle, gold round that and a
+  deeper orange towards the edge, with a restrained warm glow - the only bodies that give light. They are gold
+  whatever the topic colour is, and so are the topics' mark in the legend, their links and the lights on them.
+- An always-on memory wears a planetary ring, tilted, passing behind its planet and in front of it (one thin line
+  of the same shape when the planet is only a few pixels across); a click on the ring selects the memory. The
+  selected item keeps a crisp ring in the accent colour, the pointed-at one a fainter ring, and a recall is a
+  widening ring.
+- A deep-space background, painted by the view itself: a soft gradient, a few faint colour clouds and a field of
+  stars that turns with the view. It starts from the colour of the page the view sits in (or `--mb-bg`), and
+  fades out at its border, so it sits in any host page without a hard edge.
+- Links are gentle arcs in the colour of their busier end, quieter than the planets they join. The links of the
+  selected or pointed-at item are drawn clearly, with a soft wider line under them. The flat view has the arcs
+  too. A link's arc stays the same from one refresh of the data to the next.
+- While something is selected, pointed at or searched for, everything else steps back as a dark, solid shape of
+  itself under what is lit (it used to turn see-through), and the selection is not dimmed for being at the back.
+- Small points of light travel along the links, in the link's direction - quiet traffic, at most 320 at once; a
+  recall sends a burst of light out along the recalled item's links. Names have an outline, so they read over
+  whatever is behind them; two names no longer print over each other.
+- The light theme gets the same planets on a pale background: no stars, a soft shadow under each planet, golden
+  suns without a glow, darker arcs, small dark points of light.
+- Everything that moves by itself (the light, a few twinkling stars, the idle turn) is paced by one timer at
+  about 30 frames a second, stops in a hidden tab, and is off altogether when the system asks for reduced motion
+  - the picture then stands still and the view idles once the layout has settled, as before. It also idles
+  whenever nothing on show would move (an item without links selected, a search that lights no link).
+- A big bank turns the effects down by itself (far links straight and thin, a crowd of links dimmed, never more
+  than 320 points of light), by degrees, so that no link jumps as the view turns: at 4,000 items and 8,000 links
+  a frame issues about as many canvas calls as before.
+- The planets are painted from the kind colours (`--mb-memory` ... `--mb-session`), so a custom colour gives
+  planets to match. `--mb-topic` is the exception: it does not change the golden suns, nor what goes by their
+  colour; it applies when topics are drawn as planets (`suns: false`). Every number behind the look, the suns'
+  gold included, is in one block, `LOOK`, near the top of `ui/engine.js`.
+
 ## 1.3.0 - fixes and hardening on 1.2.0
 
 Upgrade: quit Hermes, then run `python3 install.py --profile NAME` again (`python` or `py -3` on Windows, `--root` for

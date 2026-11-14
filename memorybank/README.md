@@ -40,7 +40,21 @@ that depend on the operating system are listed under "Platforms"), but it has no
 
 You need Hermes 0.21.5 or newer, and the `hermes` command working in a terminal (try `hermes --version`).
 
-### With the installer (works today)
+### From the Hermes plugin catalog
+
+Once the plugin is listed there (until then, or if you want the installer's backup, rollback note and
+checks, use the installer below):
+
+```
+hermes plugins install memorybank
+hermes plugins enable memorybank
+hermes config set memory.provider memorybank
+```
+
+(for a named profile put `--profile NAME` after `hermes`, `--profile default` for the main one). The first session
+builds the bank from your skills, memory files and history by itself; `hermes memorybank import` does it right away.
+
+### With the installer, from a clone of the repository
 
 Run it from the project folder - the one that contains `install.py` next to this `memorybank/` folder (a catalog
 install fetches only the plugin folder, which does not include the installer). Quit Hermes first. On Windows write
@@ -81,17 +95,6 @@ replaces it.
 
 Then **restart Hermes**. To get the network page in the desktop app: main sidebar > Capabilities > Plugins >
 Memory Bank > switch on "Desktop".
-
-### From the Hermes plugin catalog (once listed)
-
-```
-hermes plugins install memorybank
-hermes plugins enable memorybank
-hermes config set memory.provider memorybank
-```
-
-(for a named profile put `--profile NAME` after `hermes`, `--profile default` for the main one). The first session
-builds the bank from your skills, memory files and history by itself; `hermes memorybank import` does it right away.
 
 ### Check it
 
@@ -364,9 +367,90 @@ USER.md are changed with the built-in `memory` tool; the bank follows.
   Linux it only prints the link, because a browser started with the link on its command line would show the key to
   other users of the machine - add `--open` to have it opened anyway).
 
-Colours: memories (amber; a ring means always-on in MEMORY.md/USER.md), entities (cyan), skills (violet), sessions
-(slate), topics (green). Click for details and links, drag to rearrange, scroll to zoom, `/` to search, `F` to fit,
+Colours: memories (amber; a ring round one means always-on in MEMORY.md/USER.md), entities (cyan), skills (violet),
+sessions (slate), topics (gold). The network is drawn in 3D as a small solar system: every item is a planet, near
+ones bigger, far ones smaller and dimmer, and the topics - which everything hangs off - are its golden suns. Click
+a planet (or the ring of an always-on one) for details and links, `/` to search, `F` to fit everything in view,
 and the play button replays how the bank grew. Recalls pulse on the graph as they happen.
+
+What the picture is made of:
+
+- **Planets:** each kind is a sort of world in the kind's own colour, muted like a photograph rather than neon:
+  memories are banded giants in amber and ochre, entities blue worlds of sea and land, skills pale violet ice
+  giants, sessions grey cratered moons. Every kind has five different worlds and an item always gets the same
+  one, so neighbours of a kind do not look alike. A planet is matte: lit from the upper left, its far side in
+  shadow, no shine and no glow. What matters more (more links, a more important memory) is bigger, not brighter.
+- **Suns:** topics are drawn as small golden suns - a soft disc, warm white in the middle, gold round that and a
+  deeper orange towards its edge, with a restrained warm glow round it. They are the only bodies that give
+  light. A sun is golden whatever the theme's topic colour is, and so is everything that goes by the topics'
+  colour: their mark in the legend and in the lists, their links and the lights on them, their recall rings.
+  (`suns: false` in `LOOK`, see below, draws topics as land worlds in the topic colour instead - green, unless
+  the page sets another.)
+- **Rings:** an always-on memory wears a planetary ring - tilted, passing behind the planet and in front of it.
+  When the planet is only a few pixels across the ring becomes one thin line of the same shape, so the mark is
+  never lost. The ring belongs to its planet: clicking it selects the memory. The selected item has a crisp
+  ring in the accent colour (outside the planetary ring, if it wears one), the pointed-at one a fainter ring,
+  and a recall is a widening ring.
+- **Background:** deep space with a few faint colour clouds and stars. The stars turn when you turn the view and
+  stay put when you slide or zoom it, which is what shows the depth.
+- **Links** are gentle arcs in the colour of their busier end, so a hub's links fan out in the hub's colour.
+  They are quieter than the planets they join. The links of the selected or pointed-at item are drawn clearly,
+  with a soft wider line under them.
+- **Selecting and searching:** everything outside the selection (or the search) steps back: each planet becomes
+  a dark shape of itself - still solid, so nothing shows through it - under whatever is lit, and the selected
+  item and what it links to are no longer dimmed for being at the back.
+- **Light on the links:** small points of light travel along the links, each from the link's first item to its
+  second (a memory to what it mentions, a session to the skill it used) - quiet traffic, at most 320 at once.
+  When something is recalled, a burst of light runs out along its links. With an item selected only its own
+  links carry light; in the timeline replay only the links that are shown do.
+- **Close up:** zoom in and a planet's surface shows - belts and storms, coasts and ice caps, craters. The bigger
+  pictures are painted the first time a planet shows that large (one a frame, so zooming in does not stall).
+- **Light theme:** the same planets on a pale background without stars, each with a soft shadow under it; suns
+  are golden discs with a soft edge and no glow, arcs are darker, and the points of light are small dark dots.
+- **Big banks:** with more than about 2,500 links in view the far ones are drawn straight and thin and only the
+  nearer, longer ones keep their arc (a link gives up its arc little by little, so nothing jumps as the view
+  turns); in the dark theme a crowd of links is also dimmed, so that it does not turn into a fog; and there are
+  never more than 320 points of light. It happens by itself; nothing needs setting.
+
+The colours come from the page the view sits in: the text colour decides between the dark and the light look, and
+the background starts from the page's own background colour. A page (or a theme) can set them outright with the
+CSS variables `--mb-memory`, `--mb-entity`, `--mb-skill`, `--mb-session`, `--mb-topic` and `--mb-bg` on the
+element that holds the view; the planets of a kind are painted from its colour (muted, darkened, turned a
+little, and never more colourful than the colour itself), so a custom colour gives planets to match. The one
+exception is `--mb-topic`: while topics are suns it changes nothing - the suns, and with them the topics' legend
+mark, links and lights, are gold (`sunGold`, `sunCore` and `sunEdge` in `LOOK`); it applies again as soon as
+`suns` is `false`. Everything else about the look - which sort of world each kind is, where the light comes
+from, how dark the night side is, the suns' gold and how strong their glow is, how far links bend, how many
+stars, how fast the light travels, where the big-bank limits lie - is one block of numbers named `LOOK` near the
+top of `ui/engine.js`; after changing it run `python3 ui/build.py` (it regenerates the dashboard and desktop
+copies).
+
+Moving around:
+
+| To | Mouse | Touch | Keys |
+|---|---|---|---|
+| turn the view | drag empty space | one finger | arrow keys |
+| slide it | Shift+drag, or drag with the right or middle button | two fingers | Shift+arrow keys |
+| zoom (towards the pointer) | scroll wheel | pinch | `+` and `-` |
+| move an item | drag it (it moves in the plane facing you) | drag it | |
+| centre on an item | double-click it (empty space: fit everything) | | `F` fits everything |
+
+- **2D/3D switch:** the "3D" button next to the kind chips changes to the flat view (the button then reads "2D":
+  the same network on a plane, where dragging empty space and the arrow keys slide the view instead of turning it)
+  and back. The choice is remembered in the browser (`localStorage`, one key: `memorybank-view`); where the host
+  allows no storage, the view starts in 3D every time.
+- **Auto-rotation:** once the layout has settled and nothing has been touched for a few seconds, the 3D view turns
+  slowly (about one turn a minute). Any key, click, scroll or pointer movement stops it at once. It does not run
+  while an item is selected or pointed at, in the flat view, or in a tab that is hidden.
+- **What moves by itself** - the light on the links, a few twinkling stars and the auto-rotation - is drawn at
+  most about 30 times a second, and not at all in a tab that is hidden. Where no link carries light and the view
+  is not turning (an item without links selected, a search that lights no link), nothing is redrawn at all.
+- **Reduced motion:** when your system asks for reduced motion (`prefers-reduced-motion`), none of that runs: no
+  travelling light, no twinkle, no turning. The picture stands still (planets, suns, stars and arcs are all
+  there) and moves only when you move it.
+
+It is still one dependency-free script drawing on an ordinary 2D canvas (no WebGL, no library, nothing loaded at
+run time), so the desktop page, the dashboard tab and the standalone page show the same thing.
 
 ## Removing things
 
@@ -422,6 +506,9 @@ and the play button replays how the bank grew. Recalls pulse on the graph as the
   report also saves that file once when it upgrades a marker made by 1.2.0, if the folder is writable);
   `memorybank.json` in the profile folder - written when you finish `hermes memory setup`, or by you; an export
   file only when you ask for one. It never writes `MEMORY.md`, `USER.md`, skills, `state.db` or `config.yaml`.
+  The network view keeps one value in the `localStorage` of the page it runs in (the Desktop app, the dashboard
+  tab or the local page): the key `memorybank-view`, holding `2d` or `3d` (the 2D/3D choice); nothing else is
+  stored in the browser and the Python side never reads it.
 - **Permissions on macOS and Linux:** a bank folder and database that this version creates are private to the user
   (mode 0700 and 0600; the `-wal` and `-shm` files follow the database). A bank that already exists - for example one
   made by 1.2.0 - keeps the modes it has. To tighten it by hand: `chmod 700 <profile>/plugin-data/memorybank` and
