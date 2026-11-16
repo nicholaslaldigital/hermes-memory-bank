@@ -21,7 +21,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or Path(__file__).resolve().parent.parent / "memorybank").resolve()
+ROOT = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or Path(__file__).resolve().parent.parent).resolve()
 _spec = importlib.util.spec_from_file_location(
     "_memorybank_core", ROOT / "core" / "__init__.py", submodule_search_locations=[str(ROOT / "core")]
 )

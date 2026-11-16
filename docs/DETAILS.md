@@ -56,8 +56,8 @@ builds the bank from your skills, memory files and history by itself; `hermes me
 
 ### With the installer, from a clone of the repository
 
-Run it from the project folder - the one that contains `install.py` next to this `memorybank/` folder (a catalog
-install fetches only the plugin folder, which does not include the installer). Quit Hermes first. On Windows write
+Run it from the project folder - the one that holds `install.py` (the repository's top folder is the plugin itself;
+the installer copies only the plugin's files into the profile). Quit Hermes first. On Windows write
 `python` (or `py -3`) where this page says `python3`; if Windows says "Python was not found" or opens the Microsoft
 Store, that is only a placeholder: install Python 3.8 or newer, or use the full path of a Python 3.8+ you already
 have (Hermes' own installer does not put one on your PATH). `hermes profile list` shows your profile names; replace

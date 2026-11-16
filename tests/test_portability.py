@@ -21,11 +21,11 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parent.parent
-PLUGIN = ROOT / "memorybank"
+PLUGIN = ROOT      # the repository's top folder IS the plugin (what installs from a plain repository link)
 PASSED: List[str] = []
 
 SKIP_PARTS = {"__pycache__", ".git", "node_modules", ".claude", "dist-packages"}
-SKIP_ROOT = {"dist"}     # the build output folder next to install.py - not memorybank/dashboard/dist, which IS shipped
+SKIP_ROOT = {"dist"}     # the build output folder next to install.py - not dashboard/dist, which IS shipped
 FORBIDDEN_SUFFIXES = {".db", ".db-wal", ".db-shm", ".db-journal", ".sqlite", ".sqlite3", ".pyc", ".pyo", ".log", ".pem", ".key",
                       ".p12", ".pfx", ".zip"}
 FORBIDDEN_NAMES = {".env", "auth.json", "credentials.json", "secrets.json"}
@@ -151,7 +151,7 @@ def t_required_files() -> None:
                 "dashboard/manifest.json", "dashboard/plugin_api.py", "dashboard/dist/index.js", "desktop/plugin.js",
                 "ui/engine.js", "skills/curate/SKILL.md"):
         assert (PLUGIN / rel).is_file(), "missing from the plugin: " + rel
-    for rel in ("install.py", "README.md", "CATALOG.md", "catalog/memorybank.yaml", "catalog/PR_DESCRIPTION.md", "tests/run_tests.py"):
+    for rel in ("install.py", "README.md", "docs/DETAILS.md", "CATALOG.md", "catalog/memorybank.yaml", "catalog/PR_DESCRIPTION.md", "tests/run_tests.py"):
         assert (ROOT / rel).is_file(), "missing: " + rel
     passed("every file the installer and the docs rely on is present")
 
@@ -201,10 +201,10 @@ def t_gitignore_hides_nothing_shipped() -> None:
             if gitignored(rel, pattern):
                 hidden.append("%s (by %s)" % (rel, pattern))
     assert not hidden, "a git repository made from this folder would leave these out: " + ", ".join(hidden)
-    for needed in ("memorybank/dashboard/dist/index.js", "memorybank/desktop/plugin.js"):
+    for needed in ("dashboard/dist/index.js", "desktop/plugin.js"):
         assert not any(gitignored(needed, p) for p in patterns), needed
     for leak in ("preview-home/plugin-data/memorybank/bank.db", "x/bank.db-wal", "x/__pycache__/m.pyc", ".claude/launch.json",
-                 "dist/hermes-memorybank-1.3.0.zip", ".DS_Store", "memorybank/.DS_Store", "memorybank-export-20261112-101500.json"):
+                 "dist/hermes-memorybank-1.3.0.zip", ".DS_Store", "core/.DS_Store", "memorybank-export-20261112-101500.json"):
         assert any(gitignored(leak, p) for p in patterns), "not ignored: " + leak
     passed(".gitignore leaves out banks, bytecode, previews, builds and OS leftovers - and nothing that is shipped")
 

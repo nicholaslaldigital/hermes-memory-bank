@@ -17,7 +17,20 @@ change helped.
 - Local only: one SQLite file per profile, no network, no model calls. Reversible: every install writes a backup
   and a one-command rollback.
 
-Details, commands, settings, safety notes and limits: [memorybank/README.md](memorybank/README.md).
+Details, commands, settings, safety notes and limits: [docs/DETAILS.md](docs/DETAILS.md).
+
+## Install from the repository link
+
+The repository's top folder is the plugin, so Hermes can install it straight from the link:
+
+- **Hermes desktop app:** install a plugin from Git and paste `https://github.com/nicholaslaldigital/hermes-memory-bank`.
+- **Command line:** `hermes plugins install nicholaslaldigital/hermes-memory-bank`
+
+This copies the plugin into the profile. It does not switch it on, back anything up or build the bank; to do those,
+use the installer below (the tested way, with a backup and a one-command rollback), or switch it on yourself with the
+two commands the installer runs: `hermes plugins enable memorybank` and `hermes config set memory.provider memorybank`.
+A link install copies the whole repository, so the installer and the tests land in the plugin folder too; they are
+never loaded.
 
 ## Quick start
 
@@ -88,7 +101,7 @@ keeps its files in `~/.hermes`, the installer finds them the way Hermes does, an
 Python), but nobody has run it on a Mac or a Linux machine. The code that exists only for those systems - owner-only
 file modes for the bank, its folder and exports, a stricter SQLite durability setting on macOS, and no automatic
 browser start on Linux - has only been exercised by a simulation on Windows (`tests/test_posix_sim.py`); the list is
-in [memorybank/README.md](memorybank/README.md) under "Platforms".
+in [docs/DETAILS.md](docs/DETAILS.md) under "Platforms".
 
 So begin with `--dry-run`. If the `hermes` command is not on your PATH, add `--hermes /full/path/to/hermes`. If
 `python3` only offers to install Apple's Command Line Tools, accept, or use Python from python.org or Homebrew. Run
@@ -104,9 +117,12 @@ that finish the job by hand. The plan it prints first (also with `--dry-run`) sa
 ## What is in this folder
 
 ```
+plugin.yaml, __init__.py, cli.py, run.py, core/, dashboard/, desktop/, skills/, ui/
+                    the plugin - the repository's top folder IS the plugin, and these are the files that get
+                    installed into a profile (a link install copies everything; install.py only these)
 install.py          the installer (and uninstaller)
 INSTALL-WITH-CLAUDE.md  a short brief for an AI assistant asked to do the install
-memorybank/         the plugin - this is what gets installed into a profile
+docs/DETAILS.md     the full documentation: commands, settings, safety notes, limits, platforms
 tests/              run_tests.py and the test files (see below)
 catalog/            a draft entry and pull-request text for the Hermes plugin catalog
 CATALOG.md          how to submit it to the Hermes plugin catalog

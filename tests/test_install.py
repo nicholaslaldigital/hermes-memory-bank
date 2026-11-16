@@ -154,6 +154,25 @@ def tree_files(folder: Path) -> List[str]:
     return sorted(found)
 
 
+# The plugin, as the repository's top folder holds it. Written out here on purpose, not read from install.py: this is
+# the oracle the installer's own list is checked against. Everything else in the repository must stay out of a profile.
+PLUGIN_TOP = ("plugin.yaml", "__init__.py", "cli.py", "run.py", "README.md", "core", "dashboard", "desktop", "skills", "ui")
+NOT_PLUGIN_TOP = ("install.py", "tests", "docs", "catalog", "CATALOG.md", "CHANGELOG.md", "INSTALL-WITH-CLAUDE.md", "LICENSE",
+                  ".gitignore", ".gitattributes")
+
+
+def plugin_tree_files() -> List[str]:
+    """Every file of the plugin that an install copies (PLUGIN_TOP of the repository), sorted, forward slashes."""
+    found: List[str] = []
+    for name in PLUGIN_TOP:
+        path = ROOT / name
+        if path.is_file():
+            found.append(name)
+        else:
+            found += [name + "/" + rel for rel in tree_files(path)]
+    return sorted(found)
+
+
 def calls(root: Path) -> List[List]:
     try:
         return [json.loads(line) for line in (root / "fake-calls.log").read_text("utf-8").splitlines() if line.strip()]
@@ -399,11 +418,11 @@ def s_files_in_use(tmp: Path) -> None:
 
 def s_nothing_a_file_manager_added_is_installed(tmp: Path) -> None:
     here = tmp / "copy"
-    shutil.copytree(str(ROOT / "memorybank"), str(here / "memorybank"), ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-    shutil.copy2(str(INSTALLER), str(here / "install.py"))
+    # the whole repository (not just the plugin files): what is not a plugin file must stay behind as well
+    shutil.copytree(str(ROOT), str(here), ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".git"))
     for junk in (".DS_Store", "._store.py", "Thumbs.db", "desktop.ini"):
-        (here / "memorybank" / junk).write_text("added by a file manager", "utf-8")
-        (here / "memorybank" / "core" / junk).write_text("added by a file manager", "utf-8")
+        (here / junk).write_text("added by a file manager", "utf-8")
+        (here / "core" / junk).write_text("added by a file manager", "utf-8")
     root, home = make_world(tmp)
     exe = make_stub(tmp)
     run("--hermes-root", str(root), "--profile", "demo", "--hermes", exe, "--no-index",
@@ -412,7 +431,29 @@ def s_nothing_a_file_manager_added_is_installed(tmp: Path) -> None:
     assert (installed / "plugin.yaml").exists()
     stray = [p.name for p in installed.rglob("*") if p.name in (".DS_Store", "Thumbs.db", "desktop.ini") or p.name.startswith("._")]
     assert not stray, stray
-    passed("what Finder or Explorer leaves in the folder is not copied into the profile")
+    left_in = [name for name in NOT_PLUGIN_TOP if (installed / name).exists()]
+    assert not left_in, "not plugin files, yet copied into the profile: %s" % left_in
+    assert tree_files(installed) == plugin_tree_files(), "the installed files are not exactly the plugin's"
+    passed("what Finder or Explorer leaves in the folder is not copied into the profile, and neither is anything that is not the plugin")
+
+
+def s_a_lone_installer_never_replaces_the_plugin(tmp: Path) -> None:
+    root, home = make_world(tmp)
+    exe = make_stub(tmp)
+    env = {"FAKE_HERMES_ROOT": str(root)}
+    run("--hermes-root", str(root), "--profile", "demo", "--hermes", exe, "--no-index", env=env)
+    installed = home / "plugins" / "memorybank"
+    before = tree_files(installed)
+    assert "plugin.yaml" in before, before
+    lone = tmp / "lone"
+    lone.mkdir()
+    shutil.copy2(str(INSTALLER), str(lone / "install.py"))       # what a backup folder holds: the installer, not the plugin
+    for extra in ((), ("--dry-run",)):
+        code, out = run("--hermes-root", str(root), "--profile", "demo", "--hermes", exe, "--no-index", *extra, env=env,
+                        installer=lone / "install.py", expect=None)
+        assert code == 2 and "plugin source not found" in out, (code, out)
+    assert tree_files(installed) == before, "the installed plugin was changed by an installer that holds no plugin"
+    passed("an installer without the plugin's files next to it stops and leaves the installed plugin alone")
 
 
 def s_rollback_commands_are_quoted(tmp: Path) -> None:
@@ -1102,7 +1143,7 @@ def s_the_lock_never_outlives_a_run(tmp: Path) -> None:
 
 
 def s_two_installers_at_once_never_leave_a_broken_plugin(tmp: Path) -> None:
-    expected = tree_files(ROOT / "memorybank")
+    expected = plugin_tree_files()
     for round_ in ("fresh", "again"):
         sub = tmp / round_
         sub.mkdir()
@@ -1799,6 +1840,7 @@ def main() -> int:
         ("s_files_in_use", lambda t: s_files_in_use(t)), ("s_units", lambda t: s_units(t)),
         ("s_python_route", lambda t: s_python_route(t, real)), ("s_run_tool", lambda t: s_run_tool(t)),
         ("s_nothing_a_file_manager_added_is_installed", lambda t: s_nothing_a_file_manager_added_is_installed(t)),
+        ("s_a_lone_installer_never_replaces_the_plugin", lambda t: s_a_lone_installer_never_replaces_the_plugin(t)),
         ("s_rollback_commands_are_quoted", lambda t: s_rollback_commands_are_quoted(t)),
         ("s_a_hermes_on_another_home_is_not_gone_round", lambda t: s_a_hermes_on_another_home_is_not_gone_round(t)),
         ("s_too_old_a_hermes_is_refused", lambda t: s_too_old_a_hermes_is_refused(t)),

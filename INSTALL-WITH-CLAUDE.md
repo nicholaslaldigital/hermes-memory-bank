@@ -1,12 +1,12 @@
 # Installing this with an AI assistant
 
 This page is for the assistant (Claude or another) that has been asked to add the Memory Bank to someone's Hermes
-Agent. It is a summary; [README.md](README.md) has the full install guide and [memorybank/README.md](memorybank/README.md)
+Agent. It is a summary; [README.md](README.md) has the full install guide and [docs/DETAILS.md](docs/DETAILS.md)
 the details. Where they disagree with this page, the READMEs and the installer's own output are right.
 
 ## What you are installing
 
-A Hermes memory-provider plugin, version 1.4.0 (`version:` in `memorybank/plugin.yaml` says which one this folder
+A Hermes memory-provider plugin, version 1.5.0 (`version:` in `plugin.yaml` says which one this folder
 holds). Its network view is 3D and drawn as a small solar system (planets, golden suns for topics, rings for
 always-on memories); [CHANGELOG.md](CHANGELOG.md) says what changed in each version.
 

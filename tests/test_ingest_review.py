@@ -24,7 +24,7 @@ import traceback
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import test_core as tc  # noqa: E402  (loads the plugin from MEMORYBANK_PLUGIN_DIR, else the neighbouring memorybank/)
+import test_core as tc  # noqa: E402  (loads the plugin from MEMORYBANK_PLUGIN_DIR, else the repository top folder)
 
 core, ingest, coverage = tc.core, tc.ingest, tc.coverage
 NOW, DAY = tc.NOW, tc.DAY

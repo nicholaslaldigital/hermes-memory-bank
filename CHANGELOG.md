@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.5.0 - a plain repository link installs it
+
+The plugin itself did not change: same code, same bank, same data format, commands and settings as 1.4.0.
+
+**What changed is where the files are.** The plugin used to live in a `memorybank/` subfolder, so Hermes' "install from
+Git" box and `hermes plugins install <owner>/<repo>` found nothing at the top of the repository ("No agent or desktop
+plugin artifacts found in this repository"). The plugin's files (`plugin.yaml`, `__init__.py`, `cli.py`, `run.py`,
+`core/`, `dashboard/`, `desktop/`, `skills/`, `ui/`) are now the repository's top folder, so
+`https://github.com/nicholaslaldigital/hermes-memory-bank` installs as it is.
+- `install.py` copies only those plugin files into a profile (not itself, `tests/`, `docs/`, `catalog/` or the notes),
+  so it installs the same files as 1.4.0, byte for byte, except `README.md` (now the repository's front page, which
+  describes the whole repository) and the version number. It also refuses to run from a folder that does not hold the
+  plugin's `plugin.yaml` and `__init__.py` (a lone copy of the installer, such as the one kept in a backup folder),
+  so it can never replace an installed plugin with nothing.
+- One wording change in the installer's own text: it no longer prints the word "sudo" (it says "not as root"), because
+  Hermes' install scanner flags that word as a caution when the whole repository is installed from a link.
+- The long README moved to `docs/DETAILS.md`; `README.md` is the front page and now has an "Install from the repository
+  link" section.
+- Upgrade: as for 1.3.0 below (quit Hermes, run the installer again, reopen Hermes). A profile that has 1.4.0 behaves
+  the same as one that has 1.5.0.
+- The version-1.4.0 entry in Nous Research's plugin catalog still works: it is pinned to the 1.4.0 commit and to the
+  `memorybank/` subfolder of that commit.
+
 ## 1.4.0 - the network view in 3D, drawn as a small solar system
 
 Upgrade: as for 1.3.0 below (quit Hermes, run the installer again, reopen Hermes). Only the network view changed;

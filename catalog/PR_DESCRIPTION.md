@@ -1,7 +1,7 @@
 ## Add `memorybank` to the plugin catalog
 
 Adds `plugin-catalog/memorybank.yaml` (category `memory`, tier `community`), pinned to `<sha>` of
-`<repo>` (`subdir: memorybank`, version 1.4.0). I am the repository's owner.
+`<repo>` (version 1.5.0; the plugin is the repository's top folder, so there is no `subdir`). I am the repository's owner.
 
 ### What it is
 
@@ -52,7 +52,7 @@ relative imports of files loaded by path); no other module entry is touched.
   `--no-open` is given, asks the operating system to open the link in the default browser through Python's
   `webbrowser` module (so `open`, `osascript` or `xdg-open` may be started on macOS/Linux; on Linux it is skipped
   unless `--open` is given, because the link carries a per-run access key).
-- **Shell commands:** the plugin runs none itself. (`install.py`, outside the pinned `subdir`, runs the user's own
+- **Shell commands:** the plugin runs none itself. (`install.py`, which is in the repository but is never loaded by the plugin, runs the user's own
   `hermes` commands - and, only when no `hermes` command can run, Hermes' own config writer in Hermes' Python - when
   the user runs it.)
 - **Reads outside the plugin's data**, inside the profile only: `memories/MEMORY.md`, `memories/USER.md`, the

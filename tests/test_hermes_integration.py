@@ -27,7 +27,7 @@ import types
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PLUGIN_SRC = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or HERE.parent / "memorybank").resolve()
+PLUGIN_SRC = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or HERE.parent).resolve()
 _BASE = (Path(os.environ.get("LOCALAPPDATA", "")) / "hermes") if os.name == "nt" else (Path.home() / ".hermes")
 REPO = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(os.environ.get("HERMES_AGENT_DIR") or (_BASE / "hermes-agent"))
 if not (REPO / "hermes_cli").is_dir():
@@ -50,8 +50,19 @@ sys.path.insert(0, str(HERE))
 import test_core  # noqa: E402  (reuses the synthetic home builder)
 
 test_core.make_home(TMP)
-shutil.copytree(PLUGIN_SRC, HOME / "plugins" / "memorybank",
-                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+# What install.py puts in a profile: the plugin's own top-level files and folders, not the rest of the repository
+# (the whole-repository shape a link install leaves is covered by `hermes plugins validate` on the repository).
+_PLUGIN_TOP = ("plugin.yaml", "__init__.py", "cli.py", "run.py", "README.md", "core", "dashboard", "desktop", "skills", "ui")
+
+
+def _installed_set(folder, names):
+    skip = shutil.ignore_patterns("__pycache__", "*.pyc")(folder, names)
+    if Path(folder).resolve() == PLUGIN_SRC:
+        skip = set(skip) | {n for n in names if n not in _PLUGIN_TOP}
+    return skip
+
+
+shutil.copytree(PLUGIN_SRC, HOME / "plugins" / "memorybank", ignore=_installed_set)
 CONFIG = (
     "memory:\n  provider: memorybank\n  memory_enabled: true\n  user_profile_enabled: true\n"
     "plugins:\n  enabled:\n    - memorybank\n  disabled: []\n"

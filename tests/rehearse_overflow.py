@@ -26,7 +26,7 @@ if len(sys.argv) < 2:
     sys.exit(2)
 
 HERE = Path(__file__).resolve().parent
-PLUGIN_SRC = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or HERE.parent / "memorybank").resolve()
+PLUGIN_SRC = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or HERE.parent).resolve()
 PROFILE = Path(sys.argv[1]).resolve()
 _BASE = (Path(os.environ.get("LOCALAPPDATA", "")) / "hermes") if os.name == "nt" else (Path.home() / ".hermes")
 AGENT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(os.environ.get("HERMES_AGENT_DIR") or (_BASE / "hermes-agent"))

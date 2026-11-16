@@ -15,7 +15,7 @@ import os
 import sys
 from pathlib import Path
 
-PLUGIN = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or Path(__file__).resolve().parent.parent / "memorybank").resolve()
+PLUGIN = Path(os.environ.get("MEMORYBANK_PLUGIN_DIR") or Path(__file__).resolve().parent.parent).resolve()
 spec = importlib.util.spec_from_file_location(
     "_memorybank_core", PLUGIN / "core" / "__init__.py", submodule_search_locations=[str(PLUGIN / "core")]
 )

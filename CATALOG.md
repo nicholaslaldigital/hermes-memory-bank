@@ -18,7 +18,7 @@ a pull request under your name.
 | No self-updating code | None: no downloads, no network at all |
 | Declared capabilities must match what it registers | `provides_hooks: transform_tool_result, on_skill_lifecycle`; no `register_tool` tools, middleware or env vars (checked by `hermes plugins validate`). The model-facing `memory_bank` tool and the `curate` skill come through the memory-provider API and `register_skill`, which the validator's probe does not see - so the PR text names them (see `catalog/PR_DESCRIPTION.md`) |
 | The install scanner and the desktop-surface / no-core-override checks pass | `tests/test_hermes_integration.py` runs Hermes' own validator on the installed copy; run `hermes plugins validate` again on the commit you pin (see below) |
-| Risky behaviour is disclosed | `catalog/PR_DESCRIPTION.md` lists it; it is also in `memorybank/README.md` |
+| Risky behaviour is disclosed | `catalog/PR_DESCRIPTION.md` lists it; it is also in `docs/DETAILS.md` |
 | Truthful compatibility metadata | `requires_hermes: ">=0.21.5"` - the version it was tested with |
 | One listing per plugin lineage | It is not a fork of a listed plugin |
 
@@ -27,7 +27,7 @@ a pull request under your name.
 1. **Where it is hosted:** the public repository https://github.com/nicholaslaldigital/hermes-memory-bank (the
    catalog clones it at the pinned commit).
 2. **A license** (this repository uses the MIT License, see `LICENSE`).
-3. **The name shown as maintainer** and the `author` line in `memorybank/plugin.yaml` (now "Hermes Memory Bank").
+3. **The name shown as maintainer** and the `author` line in `plugin.yaml` (now "Hermes Memory Bank").
 4. **Your commit e-mail.** Commits are public. Use GitHub's no-reply address
    (`git config user.email "<id>+<username>@users.noreply.github.com"`) if you do not want a real one shown.
 5. If the code was written for an employer or on their equipment, check you are free to publish it.
@@ -47,20 +47,21 @@ a pull request under your name.
   tree for your own name, employer, colleagues, hostnames and office names takes a minute. Clean the folder before
   the first commit.
 - Take the screenshot from a demo profile (`tests/test_core.py` builds one with `make_home`), not from a real profile.
-- Reorder `memorybank/README.md` for readers who arrive through the catalog: the catalog's docs page renders that file,
-  so put `hermes plugins install memorybank` first and the installer (which a catalog install does not contain) in
-  an "Alternative: from a clone of the repository" paragraph, and drop the "once listed" wording.
-- Optional, and worth a re-run of `hermes plugins validate`: add `kind: exclusive` to `memorybank/plugin.yaml` so the
+- Check `README.md` for readers who arrive through the catalog: the catalog's docs page renders that file. It opens
+  with the link install; once the entry is listed, add `hermes plugins install memorybank` there and drop the "once
+  listed" wording. (A catalog or link install copies the whole repository, `install.py` included; the README says so.)
+- Optional, and worth a re-run of `hermes plugins validate`: add `kind: exclusive` to `plugin.yaml` so the
   loader does not have to infer it from the source, and use the real owner in `author`.
 
 ## Steps
 
-1. Commit and push the release you want listed to the public repository, keeping the plugin in the `memorybank/`
-   folder (the catalog entry points there with `subdir: memorybank`).
+1. Commit and push the release you want listed to the public repository. From 1.5.0 the plugin is the repository's
+   top folder, so the catalog entry has no `subdir` (versions up to 1.4.0 kept the plugin in `memorybank/`, and the
+   entry that was merged for 1.4.0 still points there at its pinned commit).
 2. Run the same checks the catalog runs, on a checkout of the commit you will pin:
 
    ```
-   hermes plugins validate path/to/your-checkout/memorybank --install-deps
+   hermes plugins validate path/to/your-checkout --install-deps
    python3 tests/run_tests.py
    ```
 
@@ -68,7 +69,7 @@ a pull request under your name.
 3. Get the commit id: `git rev-parse HEAD` (40 hex characters). Pin that exact commit; later commits do not count
    until you re-pin.
 4. Copy `catalog/memorybank.yaml` and fill in `sha` (`repo`, `maintainer` and `docs_url` already name this
-   repository), keeping `version` equal to the one in `memorybank/plugin.yaml`.
+   repository), keeping `version` equal to the one in `plugin.yaml`.
 5. Fork `NousResearch/hermes-agent`, add that one file as `plugin-catalog/memorybank.yaml` (the PR must touch
    nothing else), and open a pull request using `catalog/PR_DESCRIPTION.md` as the description. Add a screenshot of
    the network view.

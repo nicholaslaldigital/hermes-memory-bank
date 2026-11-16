@@ -3,7 +3,7 @@
   "label": "Memory Bank",
   "description": "Live network view of everything Hermes remembers: memories, people and systems, skills and past sessions.",
   "icon": "Database",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "tab": { "path": "/memory-bank", "position": "end" },
   "entry": "dist/index.js",
   "api": "plugin_api.py"

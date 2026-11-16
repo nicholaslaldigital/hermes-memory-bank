@@ -26,7 +26,7 @@ it prints first (also with --dry-run) says which of three ways applies:
 
 What an install changes, all inside that profile's own folder:
 
-  plugins/memorybank/            the plugin (copied from ./memorybank into a temporary folder beside it, checked
+  plugins/memorybank/            the plugin (the plugin files of this folder, copied into a temporary folder beside it, checked
                                  against the source, then renamed into place: a copy that fails changes nothing)
   config.yaml                    memory.provider -> memorybank, and "memorybank"
                                  enabled as a plugin (nothing else is touched)
@@ -72,7 +72,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 NAME = "memorybank"
 HERE = Path(__file__).resolve().parent
-SOURCE = HERE / NAME
+SOURCE = HERE        # the repository's top folder IS the plugin (a plain repository link installs in Hermes); only PLUGIN_ENTRIES are copied
+# The top-level files and folders that make up the plugin. Everything else in the repository (this installer, tests/,
+# docs/, catalog/, the project's own notes, .git) is never copied into a profile.
+PLUGIN_ENTRIES = ("plugin.yaml", "__init__.py", "cli.py", "run.py", "README.md", "core", "dashboard", "desktop", "skills", "ui")
 IS_WINDOWS = os.name == "nt"
 _ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 # What file managers add: never copied into a profile, never counted when the copy is compared with the source.
@@ -661,13 +664,27 @@ def _ignored(name: str) -> bool:
     return any(fnmatch.fnmatch(name, pattern) for pattern in COPY_IGNORE)
 
 
+def _is_source(folder: Any) -> bool:
+    return os.path.normcase(os.path.abspath(str(folder))) == os.path.normcase(os.path.abspath(str(SOURCE)))
+
+
+def copy_ignore(folder: str, names: List[str]) -> List[str]:
+    """``shutil.copytree``'s ``ignore``: what file managers add everywhere, and in the repository's top folder
+    everything that is not one of PLUGIN_ENTRIES."""
+    skip = [name for name in names if _ignored(name)]
+    if _is_source(folder):
+        skip += [name for name in names if name not in PLUGIN_ENTRIES and name not in skip]
+    return skip
+
+
 def plugin_files(folder: Path) -> Dict[str, int]:
     """Every file an install copies out of ``folder``: {relative path with forward slashes: size in bytes}."""
     found: Dict[str, int] = {}
     for current, dirs, files in os.walk(str(folder), followlinks=True):
-        dirs[:] = [d for d in dirs if not _ignored(d)]
+        top = _is_source(current)
+        dirs[:] = [d for d in dirs if not _ignored(d) and (not top or d in PLUGIN_ENTRIES)]
         for name in files:
-            if not _ignored(name):
+            if not _ignored(name) and (not top or name in PLUGIN_ENTRIES):
                 full = os.path.join(current, name)
                 found[os.path.relpath(full, str(folder)).replace(os.sep, "/")] = os.path.getsize(full)
     return found
@@ -999,8 +1016,9 @@ def install(args: argparse.Namespace, root: Path, home: Path, cli: Optional[Herm
         say("  switch on  not now (--no-activate)")
     say("  bank       %s" % (home / "plugin-data" / NAME / "bank.db"))
     say("  backup     %s" % backup)
-    if not SOURCE.is_dir():
-        say("ERROR: plugin source not found at %s" % SOURCE)
+    missing = [name for name in ("plugin.yaml", "__init__.py") if not (SOURCE / name).is_file()]
+    if missing:          # a lone copy of this file (or the one kept in a backup folder) is not the plugin
+        say("ERROR: plugin source not found at %s (no %s there). Nothing was changed." % (SOURCE, " or ".join(missing)))
         return 2
     if args.dry_run:
         dry_run_note(args)
@@ -1040,7 +1058,7 @@ def _install(args: argparse.Namespace, root: Path, home: Path, cli: Optional[Her
         plugins_dir.mkdir(parents=True, exist_ok=True)
         for leftover in plugins_dir.glob(".%s-installing-*" % NAME):      # we hold the lock: a run that died left these
             shutil.rmtree(str(leftover), ignore_errors=True)
-        shutil.copytree(str(SOURCE), str(staging), ignore=shutil.ignore_patterns(*COPY_IGNORE))
+        shutil.copytree(str(SOURCE), str(staging), ignore=copy_ignore)
         problem = copy_problems(SOURCE, staging)
         if problem:
             raise RuntimeError("the copy does not match the source (%s)" % problem)
@@ -1370,7 +1388,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     clash = owner_conflict(home)
     if clash:
         say("ERROR: %s" % clash)
-        say("  Run the installer as the user who runs Hermes, without sudo: as root it would leave root-owned")
+        say("  Run the installer as the user who runs Hermes, not as root: as root it would leave root-owned")
         say("  files in the profile that Hermes (running as you) could then not write.")
         return 2
     args.agent = absolute(args.agent_dir) if args.agent_dir else root / "hermes-agent"
