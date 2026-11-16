@@ -20,6 +20,8 @@ plugin artifacts found in this repository"). The plugin's files (`plugin.yaml`, 
   link" section.
 - Upgrade: as for 1.3.0 below (quit Hermes, run the installer again, reopen Hermes). A profile that has 1.4.0 behaves
   the same as one that has 1.5.0.
+- Docs (after release): how to switch on the sidebar button in the newer desktop app, what the link install asks, and the
+  `--profile` and exact-spelling cautions, from installs on a Windows laptop and a Mac.
 - The version-1.4.0 entry in Nous Research's plugin catalog still works: it is pinned to the 1.4.0 commit and to the
   `memorybank/` subfolder of that commit.
 

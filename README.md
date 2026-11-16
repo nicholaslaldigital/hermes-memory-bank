@@ -26,9 +26,17 @@ The repository's top folder is the plugin, so Hermes can install it straight fro
 - **Hermes desktop app:** install a plugin from Git and paste `https://github.com/nicholaslaldigital/hermes-memory-bank`.
 - **Command line:** `hermes plugins install nicholaslaldigital/hermes-memory-bank`
 
-This copies the plugin into the profile. It does not switch it on, back anything up or build the bank; to do those,
-use the installer below (the tested way, with a backup and a one-command rollback), or switch it on yourself with the
-two commands the installer runs: `hermes plugins enable memorybank` and `hermes config set memory.provider memorybank`.
+This copies the plugin into the profile. It may ask whether to enable it and to use it as the memory provider: answer
+`y`. It does not back anything up. For the tested way, with a backup and a one-command rollback, use the installer
+below. Otherwise, if it did not ask (or you answered no), switch it on with the two commands the installer runs,
+typed exactly as written, lowercase and no space - `hermes plugins enable memorybank` and
+`hermes config set memory.provider memorybank` - then reopen Hermes and start a new chat. The first chat builds the
+bank from your skills, memory files and past conversations by itself; `hermes memorybank import` only does it right
+away. To see the bank: `hermes memorybank status`. With several profiles, put `--profile NAME` right after `hermes`
+in every command; plugins and settings are per profile.
+
+The sidebar button in the desktop app is separate: the sidebar button is the plugin's desktop half, a separate switch that only the app can turn on (no terminal command does): Capabilities > Plugins, then FILTERS > Installed, open the Memory Bank card and switch it on (older versions of the app list it with a "Desktop" switch on the Memory Bank row; that does the same). "Memory Bank" then appears in the sidebar, no restart needed.
+
 A link install copies the whole repository, so the installer and the tests land in the plugin folder too; they are
 never loaded.
 
@@ -70,8 +78,7 @@ conversation history, and checks it:
 python3 install.py --profile NAME
 ```
 
-Then reopen Hermes. In the desktop app: main sidebar > Capabilities > Plugins > Memory Bank > switch on "Desktop",
-and "Memory Bank" appears in the sidebar. Check it from a terminal:
+Then reopen Hermes. In the desktop app, the sidebar button is the plugin's desktop half, a separate switch that only the app can turn on (no terminal command does): Capabilities > Plugins, then FILTERS > Installed, open the Memory Bank card and switch it on (older versions of the app list it with a "Desktop" switch on the Memory Bank row; that does the same). "Memory Bank" then appears in the sidebar, no restart needed. Check it from a terminal:
 
 ```
 hermes --profile NAME memory status

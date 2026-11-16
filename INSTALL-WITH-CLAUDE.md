@@ -97,8 +97,8 @@ picked earlier with `hermes profile use`, which may be a different one.
 
 ## What only the owner can do
 
-- Reopen Hermes. In the desktop app: main sidebar > Capabilities > Plugins > Memory Bank > switch on "Desktop". Then
-  "Memory Bank" appears in the sidebar; that page is the network view.
+- Reopen Hermes. In the desktop app, the sidebar button is the plugin's desktop half, a separate switch that only the app can turn on (no terminal command does): Capabilities > Plugins, then FILTERS > Installed, open the Memory Bank card and switch it on (older versions of the app list it with a "Desktop" switch on the Memory Bank row; that does the same). "Memory Bank" then appears in the sidebar, no restart needed. That page is the network view. Tell the person this step is
+  theirs: it cannot be done from a terminal.
 - In the view: drag to turn, scroll to zoom, click an item for its details. The "3D" button next to the kind chips
   switches to a flat view and back.
 - Without the desktop app, the owner can run `hermes --profile NAME memorybank ui` in their own terminal. It serves

@@ -93,8 +93,7 @@ time is allowed per profile (a lock file, `plugin-data/.memorybank-install.lock`
 wait 15 minutes), and the new plugin copy is made beside the old one and checked against the source before it
 replaces it.
 
-Then **restart Hermes**. To get the network page in the desktop app: main sidebar > Capabilities > Plugins >
-Memory Bank > switch on "Desktop".
+Then **restart Hermes**. To get the network page in the desktop app, the sidebar button is the plugin's desktop half, a separate switch that only the app can turn on (no terminal command does): Capabilities > Plugins, then FILTERS > Installed, open the Memory Bank card and switch it on (older versions of the app list it with a "Desktop" switch on the Memory Bank row; that does the same). "Memory Bank" then appears in the sidebar, no restart needed.
 
 ### Check it
 
@@ -361,7 +360,8 @@ USER.md are changed with the built-in `memory` tool; the bank follows.
 
 ## The network view
 
-- Desktop app: Capabilities > Plugins > Memory Bank (switch on "Desktop"), then "Memory Bank" in the sidebar.
+- Desktop app: Capabilities > Plugins, FILTERS > Installed, the Memory Bank card, switch it on; then "Memory Bank" is in the
+  sidebar (older app versions: the "Desktop" switch on the Memory Bank row). Only the app can turn this on, not a terminal.
 - Dashboard: the "Memory Bank" tab.
 - Anywhere: `hermes memorybank ui` (localhost only; open the link it prints - the access key is in the link; on
   Linux it only prints the link, because a browser started with the link on its command line would show the key to
