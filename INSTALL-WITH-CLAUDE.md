@@ -13,8 +13,9 @@ always-on memories); [CHANGELOG.md](CHANGELOG.md) says what changed in each vers
 It is local only: one SQLite file per Hermes profile, no network, no model calls. It stores text from the profile's
 memory files, skills and conversations in that file, so tell the owner before you install.
 
-It was built and used on Windows with Hermes 0.21.5. It is written for macOS and Linux too, but nobody has run it
-there: on those systems be extra careful with the dry run and read "On macOS and Linux" in README.md first.
+It works on Windows and on macOS: it was built and tested on Windows with Hermes 0.21.5, and installed and used on
+Macs. Linux has not been tried: there, be extra careful with the dry run and read "On macOS and Linux" in README.md
+first.
 
 ## Ask the owner first
 

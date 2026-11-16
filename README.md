@@ -103,12 +103,13 @@ with `--purge` the bank and your `memorybank.json`, are moved into a new backup 
 
 ### On macOS and Linux
 
-This was built and run on Windows with Hermes 0.21.5, and only there. It is written for macOS and Linux too (Hermes
-keeps its files in `~/.hermes`, the installer finds them the way Hermes does, and everything is standard-library
-Python), but nobody has run it on a Mac or a Linux machine. The code that exists only for those systems - owner-only
-file modes for the bank, its folder and exports, a stricter SQLite durability setting on macOS, and no automatic
-browser start on Linux - has only been exercised by a simulation on Windows (`tests/test_posix_sim.py`); the list is
-in [docs/DETAILS.md](docs/DETAILS.md) under "Platforms".
+It works on Windows and on macOS. It was built and tested on Windows with Hermes 0.21.5, and it has been installed and
+used on Macs (Hermes keeps its files in `~/.hermes`, the installer finds them the way Hermes does, and everything is
+standard-library Python). Linux has not been tried; it is written for it in the same way. The code that exists only
+for macOS and Linux - owner-only file modes for the bank, its folder and exports, a stricter SQLite durability
+setting on macOS, and no automatic browser start on Linux - is covered by a simulation on Windows
+(`tests/test_posix_sim.py`) and by those Mac installs; the list is in [docs/DETAILS.md](docs/DETAILS.md) under
+"Platforms".
 
 So begin with `--dry-run`. If the `hermes` command is not on your PATH, add `--hermes /full/path/to/hermes`. If
 `python3` only offers to install Apple's Command Line Tools, accept, or use Python from python.org or Homebrew. Run

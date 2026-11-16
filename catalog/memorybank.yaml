@@ -13,8 +13,7 @@ category: memory
 requires_hermes: ">=0.21.5"
 docs_url: https://github.com/nicholaslaldigital/hermes-memory-bank#readme
 known_issues:
-- Developed and tested on Windows only; macOS and Linux are expected to work but have not been run.
-- The macOS/Linux-only code (owner-only file modes, macOS durability settings, no browser auto-open on Linux) is untested on a real Mac or Linux machine.
+- Works on Windows and macOS (developed and tested on Windows, installed and used on Macs); Linux has not been tried.
 - A replace that makes an existing MEMORY.md / USER.md entry longer than the room left is still refused by Hermes; only new entries (adds) are rescued.
 - Keeps excerpts of what you typed in each conversation (and skill text) in a local, unencrypted SQLite file.
 - The network view animates (about 30 frames a second) while it is open and visible; it stands still under the system's reduced-motion setting and in a hidden window.

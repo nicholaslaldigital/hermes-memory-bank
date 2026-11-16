@@ -33,8 +33,9 @@ to keep. The Memory Bank sits behind those files:
 Everything stays on your machine: one SQLite file per profile, no model calls, no network. It does not make the
 model itself faster; it makes Hermes stop forgetting, and find things again.
 
-Tested with Hermes 0.21.5 on Windows. It is written for macOS and Linux too (standard library only; the few places
-that depend on the operating system are listed under "Platforms"), but it has not been run there by its author.
+It works on Windows and on macOS: tested with Hermes 0.21.5 on Windows, and installed and used on Macs. Linux has not
+been tried, though it is written for it too (standard library only; the few places that depend on the operating system
+are listed under "Platforms").
 
 ## Install
 
@@ -133,7 +134,7 @@ put the bank back as `plugin-data/memorybank` first.
 
 ### Platforms
 
-Windows is what it was built and run on. On macOS and Linux Hermes keeps its files in `~/.hermes` (on Windows in
+Windows is what it was built and tested on, and it has been installed and used on Macs. On macOS and Linux Hermes keeps its files in `~/.hermes` (on Windows in
 `%LOCALAPPDATA%\hermes`), and the installer follows Hermes' own rule for finding them (`HERMES_HOME`, else that
 default); the installer needs Python 3.8 or newer. On a Mac, `python3` may only be Apple's Command Line Tools stub
 (it offers to install them the first time) - or use Python from python.org or Homebrew. If `hermes` is not on your
@@ -651,9 +652,10 @@ conservative; search is lexical, so the last line is its real ceiling today.
   plan" means is Hermes' call: those chats are counted as calls but have no price. The meter covers main-loop calls
   only. A before/after verdict says nothing about a change that also changed what you were doing - cost moves with
   the work as well.
-- Developed and run on Windows only. macOS and Linux are expected to work but have not been run; the code that
-  exists only there (owner-only file modes, macOS durability settings, no browser auto-open on Linux, WAL only where
-  safe) has never been executed on a real Mac or Linux machine (see "Platforms").
+- Works on Windows and on macOS (developed and tested on Windows, installed and used on Macs). Linux has not been tried;
+  the code that exists only for macOS and Linux (owner-only file modes, macOS durability settings, no browser
+  auto-open on Linux, WAL only where safe) is covered by a simulation on Windows and, for macOS, by those Mac installs
+  (see "Platforms").
 
 ## Layout
 
